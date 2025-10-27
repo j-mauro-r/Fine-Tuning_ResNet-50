@@ -1,0 +1,32 @@
+
+---
+
+## 📦 **requirements.txt**
+
+```txt
+# --- Core deep learning ---
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# --- Data handling & ML ---
+numpy>=1.24.0
+scikit-learn>=1.2.0
+pandas>=2.0.0
+
+# --- Visualization ---
+matplotlib>=3.7.0
+seaborn>=0.12.2
+
+# --- Utilities ---
+tqdm>=4.65.0
+jupyter>=1.0.0
+nbformat>=5.9.0
+
+# --- For reproducibility & environments ---
+python-dotenv>=1.0.0
+
+# --- Optional (GPU and extended tools) ---
+# If you use CUDA, ensure the correct PyTorch wheel is installed for your driver
+# For visualization with Grad-CAM (future feature):
+# grad-cam>=1.4.8
