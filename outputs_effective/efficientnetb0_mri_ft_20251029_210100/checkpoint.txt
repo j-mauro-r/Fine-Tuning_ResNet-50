@@ -1,0 +1,1 @@
+/home/jovyan/work/release/Miniproyecto_1/outputs/efficientnetb0_mri_ft_best.pth

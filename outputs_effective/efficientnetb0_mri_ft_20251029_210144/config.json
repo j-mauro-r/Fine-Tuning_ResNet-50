@@ -1,0 +1,20 @@
+{
+  "data_dir": "/root/.cache/kagglehub/datasets/rm1000/brain-tumor-mri-scans/versions/1",
+  "out_dir": "./outputs",
+  "run_name": "efficientnetb0_mri_ft",
+  "device": "cuda",
+  "num_workers": 0,
+  "pin_memory": false,
+  "batch_size": 32,
+  "seed": 42,
+  "epochs": 20,
+  "base_lr": 1e-05,
+  "weight_decay": 0.0001,
+  "sched_mode": "min",
+  "sched_factor": 0.5,
+  "sched_patience": 2,
+  "lrfind_subset": 500,
+  "lrfind_iters": 100,
+  "lrfind_start": 1e-06,
+  "lrfind_end": 0.05
+}
