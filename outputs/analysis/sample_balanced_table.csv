@@ -1,0 +1,5 @@
+idx_muestra,clase_real,clase_predicha,confianza
+616,glioma,glioma,0.9982530474662781
+83,healthy,healthy,0.9896746277809143
+223,meningioma,meningioma,0.9990444779396057
+449,pituitary,pituitary,0.9902344942092896
