@@ -1,154 +1,126 @@
-# 🧠 Microproyecto1 - Fine-Tuning ResNet-50 en Imágenes de MRI Cerebrales
+# Microproyecto1 — Clasificación de MRI con ResNet50
 
-## 🎯 Objetivo
-Este proyecto implementa un pipeline completo para **clasificar imágenes de resonancia magnética (MRI)** en **4 clases**:
-- **glioma**
-- **meningioma**
-- **pituitary (hipófisis)**
-- **healthy (sano)**
+## 📘 Descripción general
 
-El modelo base es una **ResNet-50 preentrenada en ImageNet**, a la cual se le realiza **fine-tuning** utilizando un conjunto de imágenes en **escala de grises**.
+Este proyecto implementa un pipeline **reproducible**, **documentado (estilo Google)** y **modular** para el entrenamiento y análisis de una red **ResNet50** ajustada (fine-tuning) sobre imágenes **MRI** de cerebro.
 
----
+El objetivo es clasificar cada imagen en una de las **4 categorías**:
 
-## 🧩 Estructura del proyecto
-microproyecto1/
-│
-├── microproyecto1_resnet50_skeleton.ipynb # Notebook principal con pipeline completo
-├── microproyecto_CNN.pdf # Enunciado oficial del microproyecto
-├── Matriz_General_Miniproyectos-2.pdf # Rúbrica de evaluación
-├── Doc_ResNet.pdf # Documento de referencia teórica sobre ResNet
-├── Template-Curso-Tecnicas-de-Deep-Learning.docx # Plantilla de informe
-│
-├── data_set/ # Carpeta raíz con las imágenes organizadas por clase
-│ ├── glioma/
-│ ├── meningioma/
-│ ├── pituitary/
-│ └── healthy/
-│
-├── outputs/ # Pesos, métricas y gráficos generados automáticamente
-│ ├── resnet50_grayscale_ft_best.pth
-│ ├── resnet50_grayscale_ft_history.npy
-│ └── resnet50_grayscale_ft_test_metrics.json
-│
-├── README.md
-└── requirements.txt
+- `glioma`
+- `healthy`
+- `meningioma`
+- `pituitary`
 
-🚀 Ejecución paso a paso
-
-1️⃣ Clonar el proyecto
-
-git clone https://github.com/tu_usuario/microproyecto1.git
-cd microproyecto1
-
-
-2️⃣ Crear entorno virtual
-
-python -m venv venv
-source venv/bin/activate  # En Windows: venv\\Scripts\\activate
-
-
-3️⃣ Instalar dependencias
-
-pip install -r requirements.txt
-
-
-4️⃣ Preparar dataset
-Estructura requerida:
-
-data_set/
- ├── glioma/
- ├── meningioma/
- ├── pituitary/
- └── healthy/
-
-
-5️⃣ Ejecutar notebook
-Abre microproyecto1_resnet50_skeleton.ipynb en Jupyter o VSCode y ejecuta secuencialmente.
-
-6️⃣ Resultados
-Se generarán automáticamente en la carpeta outputs/:
-
-Pesos del mejor modelo.
-
-Métricas finales.
-
-Historia de entrenamiento para graficar.
-
-🧠 Autores y créditos
-
-Autor principal: Mauricio Rodríguez
-
-Rol: Project Manager | Deep Learning Student | AI Developer
-
-Objetivo académico: Maestría en Inteligencia Artificial - Universidad de los Andes
-
-Licencia: Uso académico y de investigación (sin fines comerciales).
-
-📈 Futuras mejoras
-
-Integrar matriz de confusión y Grad-CAM para interpretación visual.
-
-Extender a ResNet-101 y ViT para comparación.
-
-Implementar early-freezing warm-up dinámico en capas convolucionales.
-
-Exportar modelo a TorchScript para despliegue.
-
-💬 Contacto
-
-📧 mauricio.rodriguez@example.com
-
-🌐 LinkedIn: linkedin.com/in/mauriciorodriguez
-
-💡 “Structure brings clarity. Clarity brings performance.”
+El sistema realiza la **preparación, entrenamiento, validación y análisis** completo, consolidando resultados, métricas y visualizaciones en una estructura ordenada de salida.
 
 ---
 
-## ⚙️ Características técnicas
+## 🧭 Flujo de trabajo recomendado
 
-### 🔸 Preprocesamiento (pipeline integrado)
-- El dataset se divide **automáticamente 80/10/10** (train/val/test) **sin mover archivos**, usando `StratifiedShuffleSplit` para garantizar balance entre clases.
-- Se aplican transformaciones con `torchvision.transforms`:
-  - Escala a 224×224
-  - Conversión a `Grayscale`
-  - Normalización
-  - Aumentos moderados (flips y ligeros cambios de brillo/contraste)
-- Compatible con datasets monocromáticos (MRI en escala de grises).
+El flujo del cuaderno `microproyecto1_resnet50_skeleton.ipynb` está dividido en **dos capítulos principales**:
 
-### 🔸 Modelo
-- **Backbone:** ResNet-50 (`torchvision.models.resnet50`)
-- **Fine-tuning completo o parcial**, configurable.
-- Dos modos de entrada:
-  - `replicate_to_3`: replica el canal gris a RGB (por defecto).
-  - `single_channel_conv`: adapta `conv1` a 1 canal promedio de los pesos RGB.
+### 🔹 Capítulo 1 — Datos
 
-### 🔸 Entrenamiento
-- **Optimizers soportados:** `AdamW` y `SGD + momentum`.
-- **Schedulers:** `OneCycleLR` o `ReduceLROnPlateau`.
-- **Early Stopping:** monitorea `macro-F1`.
-- **Métricas:** `accuracy`, `macro-F1`, `val_loss`.
+**Objetivo:** preparar y validar el pipeline de datos.
 
-### 🔸 Evaluación
-- Al finalizar el entrenamiento se evalúa en el **set de test**.
-- Se guardan:
-  - `best.pth` (mejor modelo)
-  - `history.npy` (histórico de entrenamiento)
-  - `test_metrics.json` (métricas finales)
+1. **Imports & Configuración:** activa el modo seguro (`num_workers=0`, `pin_memory=False`).
+2. **Transformaciones baseline:** resize a 224×224, normalización tipo ImageNet, sin flips ni rotaciones.
+3. **Carga del dataset:** usa `ImageFolder` y realiza split estratificado 80/10/10.
+4. **Chequeos y ejemplos:** imprime tamaños, distribución por clase y muestra 5 imágenes transformadas del set de entrenamiento.
+5. **LR Finder:** ejecuta un test sobre 500 imágenes y 100 iteraciones para encontrar el LR inicial adecuado.
+
+> 💡 **Tip:** el LR sugerido por el Finder debe asignarse manualmente a `cfg.base_lr` antes del entrenamiento.
 
 ---
 
-## 🧠 Requisitos previos
+### 🔹 Capítulo 2 — Modelo
 
-### Dependencias principales
-- Python **3.10 o superior**
-- PyTorch **>=2.0**
-- torchvision
-- scikit-learn
-- numpy, matplotlib
-- tqdm (opcional para barra de progreso)
-- GPU compatible con CUDA (opcional pero recomendado)
+**Objetivo:** entrenar, evaluar y analizar el modelo ResNet50.
 
-Instalar con:
-```bash
-pip install -r requirements.txt
+1. **ModelBuilder:** crea ResNet50 preentrenada (ImageNet) y reemplaza la capa final para 4 clases.
+2. **Trainer:** ejecuta el ciclo de entrenamiento con `ReduceLROnPlateau` y `EarlyStopping`.
+3. **ExperimentLogger:** registra automáticamente todos los artefactos relevantes.
+4. **Entrenamiento (`main(cfg)`):** ejecuta el flujo completo y guarda checkpoints, curvas y métricas.
+5. **Consolidación:** permite regenerar artefactos (curvas, métricas, matrices) sin reentrenar.
+6. **Análisis avanzado:**
+   - Matrices de confusión (conteos y normalizada).
+   - Curvas Loss/Acc/F1.
+   - Curvas ROC y Precision–Recall (OvR).
+   - Muestra balanceada (1 por clase) con tabla comparativa `real vs predicho`.
+   - Grad-CAM: 5 aleatorias + 1 por clase (layer4[-1].conv3).
+
+---
+
+## 📂 Estructura de salidas
+
+Los resultados se guardan automáticamente en:
+
+```
+outputs/
+├── resnet50_mri_ft_<timestamp>/
+│   ├── config.json
+│   ├── classes.json
+│   ├── split_sizes.json
+│   ├── split_indices.json
+│   ├── history.npy / history.csv
+│   ├── curves.png / val_metrics.png
+│   ├── test_confusion_matrix.png
+│   ├── test_metrics.json
+│   ├── requirements.freeze.txt
+│   ├── checkpoint.txt
+│   └── analysis/
+│       ├── confusion_matrices.png
+│       ├── curves_loss.png
+│       ├── roc_multiclass.png
+│       ├── pr_multiclass.png
+│       ├── sample_balanced_table.csv
+│       ├── random_test_gradcam.png
+│       └── classwise_gradcam.png
+└── resnet50_mri_ft_latest/  → enlace simbólico a la última corrida
+```
+
+---
+
+## ⚙️ Requisitos principales
+
+```
+torch
+torchvision
+numpy
+pandas
+matplotlib
+scikit-learn
+```
+
+> Todos los paquetes se registran automáticamente en `requirements.freeze.txt` al finalizar el experimento.
+
+---
+
+## 🚀 Cómo ejecutar
+
+1. **Abrir `microproyecto1_resnet50_skeleton.ipynb` en Jupyter / Colab / Coursera.**
+2. **Configurar `cfg.data_dir`** para apuntar a la carpeta raíz con subcarpetas por clase.
+3. Ejecutar las celdas del **Capítulo 1** hasta el LR Finder.
+4. Ajustar el valor de `cfg.base_lr` según la sugerencia del Finder.
+5. Ejecutar el **Capítulo 2 → `main(cfg)`** para entrenar el modelo.
+6. Ejecutar la sección de **Consolidación y Análisis** para generar métricas y gráficas.
+
+---
+
+## 🧠 Consideraciones técnicas
+
+- Todas las imágenes se convierten a **RGB (3 canales)** para compatibilidad con los pesos preentrenados de ImageNet.
+- El pipeline está diseñado para funcionar incluso en entornos con memoria limitada (Coursera, notebooks en línea).
+- Se prioriza la reproducibilidad y consistencia del experimento (semillas fijas, splits estratificados).
+- El Grad-CAM se aplica sobre la última capa convolucional (`layer4[-1].conv3`) para visualizar regiones discriminativas.
+
+---
+
+## 🏁 Créditos
+
+**Desarrollo:** Mauricio  
+**Asistencia técnica y documentación:** IA especializada en Vibe Coding (Deep Learning)
+
+---
+
+**Versión:** Consolidado (2025)
