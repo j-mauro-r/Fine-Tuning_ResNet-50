@@ -1,4 +1,4 @@
-# 🧠 Microproyecto1 - Fine-Tuning ResNet-50 en Imágenes de MRI Cerebrales
+# 🧠 Fine-Tuning ResNet-50 en Imágenes de MRI Cerebrales
 
 ## 🎯 Objetivo
 Este proyecto implementa un pipeline completo para **clasificar imágenes de resonancia magnética (MRI)** en **4 clases**:
