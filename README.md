@@ -97,9 +97,9 @@ Exportar modelo a TorchScript para despliegue.
 
 💬 Contacto
 
-📧 mauricio.rodriguez@example.com
+📧 jmrodrigez.a qgmail.com
 
-🌐 LinkedIn: linkedin.com/in/mauriciorodriguez
+🌐 LinkedIn: www.linkedin.com/in/mauricio-r-14201a190
 
 💡 “Structure brings clarity. Clarity brings performance.”
 
